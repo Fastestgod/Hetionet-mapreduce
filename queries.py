@@ -8,15 +8,6 @@ spark = SparkSession.builder.appName("Nodes_and_Edges").getOrCreate()
 nodes = spark.read.option("header", True).option("sep", "\t").csv("nodes.tsv")
 edges = spark.read.option("header", True).option("sep", "\t").csv("edges.tsv")
 
-# Optional fix: column renaming and trimming
-edges = edges.withColumnRenamed('ource', 'Source') if 'ource' in edges.columns else edges
-edges = edges.withColumnRenamed(' target', 'target') if ' target' in edges.columns else edges
-
-# Trim spaces in columns
-edges = edges.withColumn("Source", trim(col("Source"))) \
-             .withColumn("metaedge", trim(col("metaedge"))) \
-             .withColumn("target", trim(col("target")))
-
 # Filter compound (drugs) and disease nodes
 compounds = nodes.filter(col('kind') == 'Compound')
 diseases = nodes.filter(col('kind') == 'Disease')
